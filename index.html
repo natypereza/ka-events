@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KA Event &amp; Design</title>
+  <link rel="icon" href="images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="home">
+
+  <main class="home-wrap">
+    <img src="images/logo-mark.png" alt="KA Event &amp; Design" class="logo">
+    <button type="button" class="btn" id="btnEnter">Enter</button>
+  </main>
+
+  <!-- Access code modal -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button type="button" class="modal-close" id="btnClose" aria-label="Close">&times;</button>
+
+      <h2 class="modal-title" id="modalTitle">Access code</h2>
+      <p class="modal-sub">Enter the code to continue</p>
+
+      <form id="codeForm" autocomplete="off">
+        <input type="password" id="codeInput" class="input code-input" placeholder="••••••••" required>
+        <p class="error" id="codeError" role="alert"></p>
+        <button type="submit" class="btn btn-block">Continue</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>

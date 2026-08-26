@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quotes · KA Event &amp; Design</title>
+  <link rel="icon" href="images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/guard.js"></script>
+</head>
+<body>
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-logo">
+      <img src="images/logo-mark.png" alt="KA Event &amp; Design">
+    </a>
+    <nav class="topbar-nav">
+      <a href="history.html" class="link-btn">History</a>
+      <button type="button" class="link-btn" id="btnLogout">Log out</button>
+    </nav>
+  </header>
+
+  <main class="page">
+    <h1 class="page-title">New quote</h1>
+    <p class="page-sub">Fill in the event details</p>
+
+    <form id="quoteForm" class="form" novalidate>
+
+      <div class="row">
+        <label class="field">
+          <span class="label">Client name</span>
+          <input type="text" id="client" name="client" class="input" required>
+        </label>
+
+        <label class="field">
+          <span class="label">Phone</span>
+          <input type="tel" id="phone" name="phone" class="input"
+                 placeholder="e.g. 5512 3456" required>
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="field">
+          <span class="label">Event name</span>
+          <input type="text" id="eventName" name="eventName" class="input"
+                 placeholder="e.g. Morales – Estrada Wedding" required>
+        </label>
+
+        <label class="field">
+          <span class="label">Number of guests</span>
+          <input type="number" id="guests" name="guests" class="input" min="1" step="1" required>
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="field">
+          <span class="label">Event date</span>
+          <input type="date" id="date" name="date" class="input" required>
+        </label>
+
+        <label class="field">
+          <span class="label">Venue <span class="opt">(optional)</span></span>
+          <input type="text" id="venue" name="venue" class="input"
+                 placeholder="e.g. Finca El Encanto, Antigua">
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="field">
+          <span class="label">Start time <span class="opt">(optional)</span></span>
+          <input type="time" id="startTime" name="startTime" class="input">
+        </label>
+
+        <label class="field">
+          <span class="label">End time <span class="opt">(optional)</span></span>
+          <input type="time" id="endTime" name="endTime" class="input">
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="label">Event description <span class="opt">(optional)</span></span>
+        <textarea id="description" name="description" class="input" rows="4"
+                  placeholder="What the event is about — type of celebration, style, atmosphere…"></textarea>
+      </label>
+
+      <fieldset class="field fieldset">
+        <legend class="label">Services</legend>
+        <p class="hint">You can choose one or more</p>
+
+        <label class="check">
+          <input type="checkbox" name="service" value="planner">
+          <span class="check-name">Planner / Coordination</span>
+          <span class="check-price">Q3,500.00</span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" name="service" value="dayOf">
+          <span class="check-name">Day of Event <em>(5h base)</em></span>
+          <span class="check-price">Q2,800.00</span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" name="service" value="decoration" id="chkDecoration">
+          <span class="check-name">Decoration</span>
+          <span class="check-price">Per item</span>
+        </label>
+      </fieldset>
+
+      <!-- Decoration items — shown only when Decoration is checked -->
+      <div class="field decor" id="decorSection" hidden>
+        <span class="label">Decoration items</span>
+
+        <div class="decor-heads">
+          <span>Qty</span>
+          <span>Description</span>
+          <span>Unit price</span>
+          <span class="num">Amount</span>
+          <span></span>
+        </div>
+
+        <div id="decorList"></div>
+
+        <button type="button" class="add-btn" id="btnAddItem">
+          <span class="add-plus">+</span> Add item
+        </button>
+
+        <div class="decor-includes">
+          <span class="label">Included</span>
+
+          <label class="check">
+            <input type="checkbox" name="include" value="candles">
+            <span class="check-name">Candles included</span>
+          </label>
+
+          <label class="check">
+            <input type="checkbox" name="include" value="stands">
+            <span class="check-name">Stands included</span>
+          </label>
+
+          <label class="check">
+            <input type="checkbox" name="include" value="napkin rings">
+            <span class="check-name">Napkin rings included</span>
+          </label>
+        </div>
+
+        <p class="decor-total">
+          <span>Decoration total</span>
+          <strong id="decorTotal">Q0.00</strong>
+        </p>
+      </div>
+
+      <div class="row row-3">
+        <label class="field">
+          <span class="label">Extra hours</span>
+          <input type="number" id="extraHours" name="extraHours" class="input" min="0" step="1" value="0">
+        </label>
+
+        <label class="field">
+          <span class="label">Rate per hour</span>
+          <input type="number" id="hourRate" name="hourRate" class="input" min="0" step="10" value="500">
+          <span class="hint">Editable</span>
+        </label>
+
+        <label class="field">
+          <span class="label">Discount</span>
+          <select id="discount" name="discount" class="input">
+            <option value="0" selected>No discount</option>
+            <option value="10">10%</option>
+            <option value="20">20%</option>
+            <option value="30">30%</option>
+          </select>
+          <span class="hint">On the subtotal</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <span class="label">Inspiration images <span class="opt">(optional)</span></span>
+        <p class="hint">They appear at the end of the quote, marked as inspiration only.</p>
+
+        <input type="file" id="imageInput" accept="image/*" multiple hidden>
+        <button type="button" class="add-btn" id="btnAddImages">
+          <span class="add-plus">+</span> Add images
+        </button>
+
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+
+      <label class="field">
+        <span class="label">Notes <span class="opt">(optional)</span></span>
+        <textarea id="notes" name="notes" class="input" rows="4"></textarea>
+      </label>
+
+      <p class="error" id="formError" role="alert"></p>
+
+      <div class="actions">
+        <button type="submit" class="btn">Generate quote</button>
+        <button type="reset" class="btn btn-ghost">Clear</button>
+      </div>
+    </form>
+
+    <!-- Generated quote -->
+    <section class="quote" id="quote" hidden>
+      <div class="quote-head">
+        <img src="images/logo-mark.png" alt="KA Event &amp; Design" class="quote-logo">
+        <div>
+          <h2 class="quote-title">Quote</h2>
+          <p class="quote-issued" id="qIssued"></p>
+        </div>
+      </div>
+
+      <dl class="quote-list">
+        <div><dt>Client</dt><dd id="qClient"></dd></div>
+        <div><dt>Phone</dt><dd id="qPhone"></dd></div>
+        <div><dt>Event</dt><dd id="qEventName"></dd></div>
+        <div><dt>Guests</dt><dd id="qGuests"></dd></div>
+        <div><dt>Event date</dt><dd id="qDate"></dd></div>
+        <div id="qScheduleWrap"><dt>Schedule</dt><dd id="qSchedule"></dd></div>
+        <div id="qVenueWrap"><dt>Venue</dt><dd id="qVenue"></dd></div>
+        <div id="qDescriptionWrap"><dt>Event description</dt><dd id="qDescription"></dd></div>
+        <div id="qNotesWrap"><dt>Notes</dt><dd id="qNotes"></dd></div>
+      </dl>
+
+      <table class="quote-table">
+        <thead>
+          <tr>
+            <th scope="col">Description</th>
+            <th scope="col" class="num">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="qItems"></tbody>
+        <!-- Totals live in a second tbody, not a tfoot: browsers repeat a
+             tfoot on every printed page when a long table splits. -->
+        <tbody id="qTotals"></tbody>
+      </table>
+
+      <!-- Inspiration images, only when some were added -->
+      <section class="inspo" id="qInspo" hidden>
+        <h3 class="inspo-title">Inspiration</h3>
+        <p class="inspo-note">
+          The images below are shared as inspiration for the proposed style.
+          They are a visual reference, not the final result.
+        </p>
+        <div class="inspo-grid" id="qInspoGrid"></div>
+      </section>
+
+      <div class="quote-sign">
+        <p class="quote-sign-name">Karen Aguja de Pérez</p>
+        <p class="quote-sign-role">KA Event &amp; Design</p>
+      </div>
+
+      <div class="actions no-print">
+        <button type="button" class="btn" id="btnPrint">Print / Save PDF</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

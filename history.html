@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quote history · KA Event &amp; Design</title>
+  <link rel="icon" href="images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/guard.js"></script>
+</head>
+<body>
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-logo">
+      <img src="images/logo-mark.png" alt="KA Event &amp; Design">
+    </a>
+    <nav class="topbar-nav">
+      <a href="quotations.html" class="link-btn">New quote</a>
+      <button type="button" class="link-btn" id="btnLogout">Log out</button>
+    </nav>
+  </header>
+
+  <main class="page page-wide">
+    <h1 class="page-title">Quote history</h1>
+    <p class="page-sub" id="count">No quotes yet</p>
+
+    <div class="history-bar">
+      <input type="search" id="search" class="input"
+             placeholder="Search by client, phone or event…" aria-label="Search quotes">
+    </div>
+
+    <div id="list"></div>
+
+    <p class="empty" id="empty" hidden>
+      No quotes have been saved yet.
+      <a href="quotations.html">Create the first one</a>.
+    </p>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script src="js/history.js"></script>
+</body>
+</html>
