@@ -196,6 +196,94 @@ function render() {
 
 searchEl.addEventListener("input", render);
 
+
+/* ===== Backup =====
+   The history lives in this browser, tied to this exact web address.
+   Exporting writes it to a file you can keep, or load on another
+   computer, browser or address. */
+
+const msgEl = document.getElementById("msg");
+
+function say(text, isError) {
+  msgEl.textContent = text;
+  msgEl.classList.toggle("is-error", Boolean(isError));
+}
+
+document.getElementById("btnExport").addEventListener("click", () => {
+  const list = loadQuotes();
+
+  if (list.length === 0) {
+    say("There is nothing to export yet.", true);
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(list, null, 2)], { type: "application/json" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+
+  a.href = url;
+  a.download = "ka-quotes-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  say(list.length + (list.length === 1 ? " quote exported." : " quotes exported."));
+});
+
+document.getElementById("btnImport").addEventListener("click", () => {
+  document.getElementById("importInput").click();
+});
+
+document.getElementById("importInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    let incoming;
+
+    try {
+      incoming = JSON.parse(reader.result);
+    } catch (err) {
+      say("That file is not a valid backup.", true);
+      return;
+    }
+
+    if (!Array.isArray(incoming)) {
+      say("That file is not a valid backup.", true);
+      return;
+    }
+
+    // Merge instead of replace, so an import never erases what is here
+    const current = loadQuotes();
+    const seen    = new Set(current.map((q) => q.id));
+    const added   = incoming.filter((q) => q && q.id && !seen.has(q.id));
+
+    const merged = current
+      .concat(added)
+      .sort((a, b) => new Date(b.issuedAt) - new Date(a.issuedAt));
+
+    if (!writeQuotes(merged)) {
+      say("Could not save: the browser storage is full or blocked.", true);
+      return;
+    }
+
+    render();
+
+    const skipped = incoming.length - added.length;
+    say(
+      added.length + (added.length === 1 ? " quote imported" : " quotes imported") +
+      (skipped > 0 ? ", " + skipped + " already here" : "") + "."
+    );
+  };
+
+  reader.onerror = () => say("That file could not be read.", true);
+  reader.readAsText(file);
+});
+
 listEl.addEventListener("click", (e) => {
   const btn = e.target.closest(".h-delete");
   if (!btn) return;

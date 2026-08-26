@@ -30,6 +30,14 @@
     <div class="history-bar">
       <input type="search" id="search" class="input"
              placeholder="Search by client, phone or event…" aria-label="Search quotes">
+
+      <div class="history-actions">
+        <button type="button" class="add-btn" id="btnExport">Export backup</button>
+        <button type="button" class="add-btn" id="btnImport">Import backup</button>
+        <input type="file" id="importInput" accept="application/json,.json" hidden>
+      </div>
+
+      <p class="history-msg" id="msg" role="status"></p>
     </div>
 
     <div id="list"></div>
