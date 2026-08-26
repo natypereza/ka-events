@@ -11,12 +11,41 @@ const PRICES = {
 const form    = document.getElementById("quoteForm");
 const errorEl = document.getElementById("formError");
 const quote   = document.getElementById("quote");
-const savedEl = document.getElementById("savedNote");
 
-document.getElementById("btnLogout").addEventListener("click", signOut);
+// Log out: clears access and returns home
+document.getElementById("btnLogout").addEventListener("click", () => {
+  try {
+    sessionStorage.removeItem("ka_access");
+  } catch (err) { /* sessionStorage unavailable */ }
+  window.location.href = "index.html";
+});
 
-/* money(), longDate() and clockTime() come from js/store.js, which both
-   this page and the history page share. */
+// Q1,234.00
+function money(value) {
+  return "Q" + value.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+// "Saturday, September 12, 2026"
+function longDate(value) {
+  const [y, m, d] = value.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+}
+
+// "5:00 PM" from a 24h "17:00"
+function clockTime(value) {
+  const [h, m] = value.split(":").map(Number);
+  const suffix = h < 12 ? "AM" : "PM";
+  const hour   = h % 12 === 0 ? 12 : h % 12;
+  return hour + ":" + String(m).padStart(2, "0") + " " + suffix;
+}
 
 function row(label, amount, className) {
   const tr = document.createElement("tr");
@@ -186,10 +215,9 @@ thumbs.addEventListener("click", (e) => {
 });
 
 
-form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", (e) => {
   e.preventDefault();
   errorEl.textContent = "";
-  savedEl.textContent = "";
 
   const client      = document.getElementById("client").value.trim();
   const phone       = document.getElementById("phone").value.trim();
@@ -389,71 +417,6 @@ form.addEventListener("submit", async (e) => {
 
   quote.hidden = false;
   quote.scrollIntoView({ behavior: "smooth", block: "start" });
-
-  /* ---- Save this quote to the history ----
-     It goes to the database on the server, so it stays there for good.
-     Everything is kept, including the unit price of each decoration
-     item. The inspiration photos are not: they belong to the PDF. */
-  const record = {
-    id:        "q" + issuedAt.getTime(),
-    issuedAt:  issuedAt.toISOString(),
-    client, phone, eventName, guests: Number(guests), date, venue,
-    startTime, endTime, schedule, description, notes,
-    services,
-    decorItems: decorItems.map((item) => ({
-      qty:    item.qty,
-      desc:   item.desc,
-      price:  item.price,
-      amount: item.amount
-    })),
-    includes: Array.from(
-      form.querySelectorAll('input[name="include"]:checked')
-    ).map((c) => c.value),
-    extraHours, hourRate, discount,
-    subtotal, discountAmount, total,
-    imageCount: images.length
-  };
-
-  // The PDF built on the server needs the date already written out
-  record.dateLabel = longDate(date);
-
-  savedEl.textContent = "Saving to history…";
-  savedEl.className   = "saved-note";
-
-  let problem = "";
-
-  try {
-    await addQuote(record);
-  } catch (err) {
-    problem = "It could NOT be saved to the history (" + err.message + ").";
-  }
-
-  savedEl.textContent = problem
-    ? problem + " Sending by email…"
-    : "Saved to history. Sending by email…";
-
-  try {
-    const res  = await fetch("/api/email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "same-origin",
-      body: JSON.stringify({ quote: record, images })
-    });
-    const body = await res.json().catch(() => ({}));
-
-    if (!res.ok) throw new Error(body.error || "Request failed");
-
-    savedEl.textContent = problem
-      ? problem + " It was emailed to " + body.to + "."
-      : "Saved to history and emailed to " + body.to + ".";
-    savedEl.className = problem ? "saved-note is-error" : "saved-note";
-  } catch (err) {
-    savedEl.textContent =
-      (problem ? problem + " " : "Saved to history. ") +
-      "The email could NOT be sent: " + err.message +
-      " — save the PDF and send it by hand.";
-    savedEl.className = "saved-note is-error";
-  }
 });
 
 // Clearing the form hides the quote, the decoration rows and the images
