@@ -43,9 +43,9 @@ img { max-width: 100%; display: block; }
 }
 
 .logo{
-  width: min(280px, 62vw);
+  width: min(260px, 58vw);
   height: auto;
-  margin-bottom: 34px;
+  margin-bottom: 30px;
   animation: fade .9s ease both;
 }
 
@@ -53,6 +53,68 @@ img { max-width: 100%; display: block; }
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: none; }
 }
+
+/* The public call to action: a title, not a boxed button */
+.home-cta{
+  background: none;
+  border: 0;
+  padding: 0 0 6px;
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: .03em;
+  color: var(--cream);
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+  transition: border-color .25s ease;
+}
+
+.home-cta:hover,
+.home-cta:focus-visible{ border-bottom-color: var(--cream); }
+
+.social{
+  display: flex;
+  gap: 26px;
+  margin-top: 30px;
+}
+
+.social-link{
+  display: block;
+  color: var(--cream-dim);
+  transition: color .25s ease, transform .25s ease;
+}
+
+.social-link svg{
+  width: 23px;
+  height: 23px;
+  fill: currentColor;
+  display: block;
+}
+
+.social-link:hover,
+.social-link:focus-visible{
+  color: var(--cream);
+  transform: translateY(-2px);
+}
+
+/* Her own way in, deliberately quiet */
+.home-enter{
+  margin-top: 32px;
+  font-size: 10.5px;
+  color: #4f4d49;
+}
+
+.home-enter:hover{ color: var(--cream-dim); }
+
+/* The request fields read left to right inside a centred box */
+.request-form{
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.request-form .error{ margin: 2px 0 0; }
 
 
 /* ===== BUTTONS ===== */
