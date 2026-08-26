@@ -379,6 +379,9 @@ form.addEventListener("submit", async (e) => {
 
   const issuedAt = new Date();
 
+  // Names the PDF file: "Ana Lucia Morales - Morales Estrada Wedding"
+  pdfName = safeName(client + " - " + eventName);
+
   document.getElementById("qIssued").textContent =
     "Issued on " + issuedAt.toLocaleDateString("en-US", {
       month: "long", day: "numeric", year: "numeric"
@@ -411,16 +414,44 @@ form.addEventListener("submit", async (e) => {
     imageCount: images.length
   };
 
+  // The PDF built on the server needs the date already written out
+  record.dateLabel = longDate(date);
+
   savedEl.textContent = "Saving to history…";
   savedEl.className   = "saved-note";
 
+  let problem = "";
+
   try {
     await addQuote(record);
-    savedEl.textContent = "Saved to history.";
+  } catch (err) {
+    problem = "It could NOT be saved to the history (" + err.message + ").";
+  }
+
+  savedEl.textContent = problem
+    ? problem + " Sending by email…"
+    : "Saved to history. Sending by email…";
+
+  try {
+    const res  = await fetch("/api/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ quote: record, images })
+    });
+    const body = await res.json().catch(() => ({}));
+
+    if (!res.ok) throw new Error(body.error || "Request failed");
+
+    savedEl.textContent = problem
+      ? problem + " It was emailed to " + body.to + "."
+      : "Saved to history and emailed to " + body.to + ".";
+    savedEl.className = problem ? "saved-note is-error" : "saved-note";
   } catch (err) {
     savedEl.textContent =
-      "The quote is ready, but it could NOT be saved to the history: " +
-      err.message + " — save the PDF so you do not lose it.";
+      (problem ? problem + " " : "Saved to history. ") +
+      "The email could NOT be sent: " + err.message +
+      " — save the PDF and send it by hand.";
     savedEl.className = "saved-note is-error";
   }
 });
@@ -441,6 +472,25 @@ form.addEventListener("reset", () => {
   }, 0);
 });
 
+/* The browser names the saved PDF after the page title, so we swap the
+   title for "Client - Event" while the print dialog is open. */
+
+let pdfName = "";
+
+function safeName(text) {
+  return text.replace(/[\\/:*?"<>|]/g, " ").replace(/\s+/g, " ").trim();
+}
+
 document.getElementById("btnPrint").addEventListener("click", () => {
   window.print();
+});
+
+const pageTitle = document.title;
+
+window.addEventListener("beforeprint", () => {
+  if (pdfName) document.title = pdfName;
+});
+
+window.addEventListener("afterprint", () => {
+  document.title = pageTitle;
 });
