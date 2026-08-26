@@ -35,11 +35,11 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && reqModal.classList.contains("open")) closeRequest();
 });
 
-// "September 12, 2026" from a 24h date field
+// "12 de septiembre de 2026" — the message goes to WhatsApp in Spanish
 function requestDate(value) {
   const [y, m, d] = value.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString("en-US", {
-    month: "long", day: "numeric", year: "numeric"
+  return new Date(y, m - 1, d).toLocaleDateString("es-GT", {
+    day: "numeric", month: "long", year: "numeric"
   });
 }
 
@@ -47,17 +47,12 @@ reqForm.addEventListener("submit", (e) => {
   e.preventDefault();
   reqError.textContent = "";
 
-  const name  = document.getElementById("rName").value.trim();
-  const phone = document.getElementById("rPhone").value.trim();
-  const type  = document.getElementById("rType").value.trim();
-  const date  = document.getElementById("rDate").value;
+  const name = document.getElementById("rName").value.trim();
+  const type = document.getElementById("rType").value.trim();
+  const date = document.getElementById("rDate").value;
 
   if (!name) {
     reqError.textContent = "Please enter your name.";
-    return;
-  }
-  if (!phone) {
-    reqError.textContent = "Please enter your phone number.";
     return;
   }
   if (!type) {
@@ -65,15 +60,17 @@ reqForm.addEventListener("submit", (e) => {
     return;
   }
 
+  /* The message is written in Spanish: it is what the client sends and
+     what Karen reads. The phone is not asked for, WhatsApp already
+     shows who is writing. */
   const lines = [
-    "Hello KA Event & Design, I would like a quote.",
+    "Hola KA Event & Design, quisiera una cotización ✨",
     "",
-    "Name: " + name,
-    "Phone: " + phone,
-    "Type of event: " + type
+    "Nombre: " + name,
+    "Tipo de evento: " + type
   ];
 
-  if (date) lines.push("Event date: " + requestDate(date));
+  if (date) lines.push("Fecha del evento: " + requestDate(date));
 
   const url = WHATSAPP + "&text=" + encodeURIComponent(lines.join("\n"));
 
