@@ -847,7 +847,7 @@ select.input option{
   .quote{
     margin: 0;
     border: 0;
-    padding: 10mm 15mm 5mm;
+    padding: 8mm 15mm 4mm;
     animation: none;
   }
 
@@ -863,12 +863,12 @@ select.input option{
   /* Tighter spacing so a quotation with several decoration items
      still fits on one sheet */
   .quote-list{ margin-bottom: 18px; }
-  .quote-list > div{ padding: 3px 0; }
-  .quote-list dd{ font-size: 14px; }
-  .quote-list dt{ font-size: 10.5px; }
-  .quote-table{ margin-bottom: 0; font-size: 13.5px; }
+  .quote-list > div{ padding: 2px 0; }
+  .quote-list dd{ font-size: 13px; }
+  .quote-list dt{ font-size: 10px; }
+  .quote-table{ margin-bottom: 0; font-size: 13px; }
   .quote-table th,
-  .quote-table td{ padding: 6px 0; }
+  .quote-table td{ padding: 5px 0; }
   .quote-table thead th{ font-size: 10.5px; }
   .quote-table tbody .group th{ padding-top: 12px; font-size: 10.5px; }
   .quote-table tbody .item td{ padding: 3px 0; }
@@ -881,29 +881,37 @@ select.input option{
   .quote-table .total th,
   .quote-table .total td{ font-size: 20px; padding-top: 10px; }
 
-  /* A fixed box is painted onto every printed sheet, so this is what
-     puts the logo on page two and beyond. It sits in the top-right
-     corner, clear of the title on the left. */
+  /* A fixed box is painted onto every printed sheet, which is what
+     puts the logo in the corner of page two and beyond. */
   .print-logo{
     display: block;
     position: fixed;
-    top: 9mm;
+    top: 12mm;
     right: 15mm;
     width: 15mm;
+    z-index: 0;
   }
 
-  /* The in-flow logo would collide with the fixed one on page one */
-  .quote-logo{ display: none; }
-
-  /* Title and date on the left, not centred */
+  /* Page one carries the full logo centred instead. This header is
+     opaque and sits above the fixed one, hiding the corner mark on
+     the first sheet only. */
   .quote-head{
+    position: relative;
+    z-index: 1;
+    background: var(--black);
     display: block;
     text-align: left;
     padding-bottom: 10px;
     margin-bottom: 10px;
   }
 
-  .quote-title{ font-size: 27px; }
+  .quote-logo{
+    display: block;
+    width: 21mm;
+    margin: 0 auto 6px;
+  }
+
+  .quote-title{ font-size: 24px; }
   .quote-issued{ font-size: 10.5px; }
 
   /* Slightly lighter rules so they stay visible on paper */
@@ -919,8 +927,8 @@ select.input option{
 
   /* Observations stay together and compact */
   .terms{
-    margin-top: 12px;
-    padding-top: 10px;
+    margin-top: 10px;
+    padding-top: 8px;
     break-inside: avoid;
   }
 
@@ -962,12 +970,12 @@ select.input option{
   /* Kept tight so the signature closes the first sheet instead of
      being pushed onto one of its own */
   .quote-sign{
-    margin-top: 12px;
-    padding-top: 12px;
+    margin-top: 6px;
+    padding-top: 8px;
     break-inside: avoid;
   }
 
-  .quote-sign-name{ font-size: 20px; }
+  .quote-sign-name{ font-size: 18px; }
   .quote-sign-role{ font-size: 7.5px; }
   .quote-sign-ig{ font-size: 10px; margin-top: 4px; }
 }
