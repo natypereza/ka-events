@@ -11,14 +11,9 @@ const PRICES = {
 const form    = document.getElementById("quoteForm");
 const errorEl = document.getElementById("formError");
 const quote   = document.getElementById("quote");
+const savedEl = document.getElementById("savedNote");
 
-// Log out: clears access and returns home
-document.getElementById("btnLogout").addEventListener("click", () => {
-  try {
-    sessionStorage.removeItem("ka_access");
-  } catch (err) { /* sessionStorage unavailable */ }
-  window.location.href = "index.html";
-});
+document.getElementById("btnLogout").addEventListener("click", signOut);
 
 /* money(), longDate() and clockTime() come from js/store.js, which both
    this page and the history page share. */
@@ -191,9 +186,10 @@ thumbs.addEventListener("click", (e) => {
 });
 
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorEl.textContent = "";
+  savedEl.textContent = "";
 
   const client      = document.getElementById("client").value.trim();
   const phone       = document.getElementById("phone").value.trim();
@@ -388,11 +384,14 @@ form.addEventListener("submit", (e) => {
       month: "long", day: "numeric", year: "numeric"
     });
 
-  /* ---- Keep a record of this quote ----
-     Everything is stored, including the unit price of each decoration
-     item. The inspiration photos are not: they would fill the browser's
-     storage after a handful of quotes. */
-  const saved = addQuote({
+  quote.hidden = false;
+  quote.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  /* ---- Save this quote to the history ----
+     It goes to the database on the server, so it stays there for good.
+     Everything is kept, including the unit price of each decoration
+     item. The inspiration photos are not: they belong to the PDF. */
+  const record = {
     id:        "q" + issuedAt.getTime(),
     issuedAt:  issuedAt.toISOString(),
     client, phone, eventName, guests: Number(guests), date, venue,
@@ -410,16 +409,20 @@ form.addEventListener("submit", (e) => {
     extraHours, hourRate, discount,
     subtotal, discountAmount, total,
     imageCount: images.length
-  });
+  };
 
-  if (!saved) {
-    errorEl.textContent =
-      "The quote was generated but could not be saved to the history " +
-      "(browser storage is full or blocked).";
+  savedEl.textContent = "Saving to history…";
+  savedEl.className   = "saved-note";
+
+  try {
+    await addQuote(record);
+    savedEl.textContent = "Saved to history.";
+  } catch (err) {
+    savedEl.textContent =
+      "The quote is ready, but it could NOT be saved to the history: " +
+      err.message + " — save the PDF so you do not lose it.";
+    savedEl.className = "saved-note is-error";
   }
-
-  quote.hidden = false;
-  quote.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 // Clearing the form hides the quote, the decoration rows and the images

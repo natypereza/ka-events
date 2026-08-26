@@ -1,40 +1,56 @@
 /* Saved quotes — KA Event & Design
 
-   The history lives in this browser's localStorage. It is not sent
-   anywhere and it is not shared between computers: whoever opens the
-   page on this machine, in this browser, sees this history. */
+   Quotes live in a database on the server, not in this browser. They
+   survive clearing your history, and you see the same list from any
+   computer or phone once you enter the code. */
 
-const STORE_KEY = "ka_quotes";
+async function api(path, options) {
+  const res = await fetch(path, {
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    ...options
+  });
 
-function loadQuotes() {
-  try {
-    const raw = localStorage.getItem(STORE_KEY);
-    const list = raw ? JSON.parse(raw) : [];
-    return Array.isArray(list) ? list : [];
-  } catch (err) {
-    return [];   // unreadable or blocked storage: behave as if empty
+  if (res.status === 401) {
+    // The session expired or was never there
+    window.location.replace("index.html");
+    throw new Error("Not signed in");
   }
-}
 
-function writeQuotes(list) {
-  try {
-    localStorage.setItem(STORE_KEY, JSON.stringify(list));
-    return true;
-  } catch (err) {
-    return false;   // storage full or blocked
+  const body = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(body.error || "Request failed (" + res.status + ")");
   }
+  return body;
 }
 
-// Newest first
-function addQuote(quote) {
-  const list = loadQuotes();
-  list.unshift(quote);
-  return writeQuotes(list);
+// Newest first, straight from the server
+async function loadQuotes() {
+  const list = await api("/api/quotes");
+  return Array.isArray(list) ? list : [];
 }
 
-function deleteQuote(id) {
-  return writeQuotes(loadQuotes().filter((q) => q.id !== id));
+async function addQuote(quote) {
+  await api("/api/quotes", { method: "POST", body: JSON.stringify(quote) });
 }
+
+async function deleteQuote(id) {
+  await api("/api/quotes?id=" + encodeURIComponent(id), { method: "DELETE" });
+}
+
+// Used by the history import, one quote at a time
+async function saveMany(quotes) {
+  for (const quote of quotes) await addQuote(quote);
+}
+
+async function signOut() {
+  try {
+    await fetch("/api/login", { method: "DELETE", credentials: "same-origin" });
+  } catch (err) { /* leaving anyway */ }
+  window.location.href = "index.html";
+}
+
 
 /* ---- Shared formatting, used by both pages ---- */
 

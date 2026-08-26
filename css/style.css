@@ -758,6 +758,15 @@ a.link-btn{ text-decoration: none; }
 
 .history-msg.is-error{ color: var(--error); }
 
+.saved-note{
+  margin: 16px 0 0;
+  font-size: 12.5px;
+  letter-spacing: .04em;
+  color: var(--cream-dim);
+}
+
+.saved-note.is-error{ color: var(--error); }
+
 .empty{
   padding: 44px 0;
   text-align: center;

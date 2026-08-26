@@ -11,12 +11,11 @@ const emptyEl  = document.getElementById("empty");
 const countEl  = document.getElementById("count");
 const searchEl = document.getElementById("search");
 
-document.getElementById("btnLogout").addEventListener("click", () => {
-  try {
-    sessionStorage.removeItem("ka_access");
-  } catch (err) { /* sessionStorage unavailable */ }
-  window.location.href = "index.html";
-});
+document.getElementById("btnLogout").addEventListener("click", signOut);
+
+/* The full list, fetched once from the server and kept here so that
+   typing in the search box does not hit the network on every letter. */
+let quotes = [];
 
 // "August 25, 2026"
 function issuedDate(iso) {
@@ -168,10 +167,11 @@ function card(quote) {
   return box;
 }
 
+// Draws whatever is already in `quotes` — no network
 function render() {
-  const term   = searchEl.value.trim().toLowerCase();
-  const all    = loadQuotes();
-  const shown  = term
+  const term  = searchEl.value.trim().toLowerCase();
+  const all   = quotes;
+  const shown = term
     ? all.filter((q) =>
         [q.client, q.phone, q.eventName, q.venue]
           .filter(Boolean)
@@ -186,11 +186,23 @@ function render() {
   if (all.length === 0) {
     countEl.textContent = "No quotes yet";
   } else if (term) {
-    countEl.textContent =
-      shown.length + " of " + all.length + " quotes";
+    countEl.textContent = shown.length + " of " + all.length + " quotes";
   } else {
     countEl.textContent =
       all.length + (all.length === 1 ? " quote saved" : " quotes saved");
+  }
+}
+
+// Fetches from the server, then draws
+async function refresh() {
+  countEl.textContent = "Loading…";
+
+  try {
+    quotes = await loadQuotes();
+    render();
+  } catch (err) {
+    countEl.textContent = "Could not load the history";
+    say(err.message, true);
   }
 }
 
@@ -198,9 +210,9 @@ searchEl.addEventListener("input", render);
 
 
 /* ===== Backup =====
-   The history lives in this browser, tied to this exact web address.
-   Exporting writes it to a file you can keep, or load on another
-   computer, browser or address. */
+   The history is on the server, so this is not what keeps it safe —
+   it is for taking a copy out, or bringing quotes in from somewhere
+   else. */
 
 const msgEl = document.getElementById("msg");
 
@@ -210,7 +222,7 @@ function say(text, isError) {
 }
 
 document.getElementById("btnExport").addEventListener("click", () => {
-  const list = loadQuotes();
+  const list = quotes;
 
   if (list.length === 0) {
     say("There is nothing to export yet.", true);
@@ -242,7 +254,7 @@ document.getElementById("importInput").addEventListener("change", (e) => {
 
   const reader = new FileReader();
 
-  reader.onload = () => {
+  reader.onload = async () => {
     let incoming;
 
     try {
@@ -257,41 +269,52 @@ document.getElementById("importInput").addEventListener("change", (e) => {
       return;
     }
 
-    // Merge instead of replace, so an import never erases what is here
-    const current = loadQuotes();
-    const seen    = new Set(current.map((q) => q.id));
-    const added   = incoming.filter((q) => q && q.id && !seen.has(q.id));
+    // Only what is not already on the server, so nothing is duplicated
+    const seen  = new Set(quotes.map((q) => q.id));
+    const added = incoming.filter((q) => q && q.id && q.issuedAt && !seen.has(q.id));
 
-    const merged = current
-      .concat(added)
-      .sort((a, b) => new Date(b.issuedAt) - new Date(a.issuedAt));
-
-    if (!writeQuotes(merged)) {
-      say("Could not save: the browser storage is full or blocked.", true);
+    if (added.length === 0) {
+      say("Nothing new to import: those quotes are already here.");
       return;
     }
 
-    render();
+    say("Importing " + added.length + "…");
 
-    const skipped = incoming.length - added.length;
-    say(
-      added.length + (added.length === 1 ? " quote imported" : " quotes imported") +
-      (skipped > 0 ? ", " + skipped + " already here" : "") + "."
-    );
+    try {
+      await saveMany(added);
+      await refresh();
+
+      const skipped = incoming.length - added.length;
+      say(
+        added.length + (added.length === 1 ? " quote imported" : " quotes imported") +
+        (skipped > 0 ? ", " + skipped + " already here" : "") + "."
+      );
+    } catch (err) {
+      await refresh();
+      say("Import failed partway through: " + err.message, true);
+    }
   };
 
   reader.onerror = () => say("That file could not be read.", true);
   reader.readAsText(file);
 });
 
-listEl.addEventListener("click", (e) => {
+listEl.addEventListener("click", async (e) => {
   const btn = e.target.closest(".h-delete");
   if (!btn) return;
 
-  if (confirm("Delete this quote from the history? This cannot be undone.")) {
-    deleteQuote(btn.dataset.id);
-    render();
+  if (!confirm("Delete this quote from the history? This cannot be undone.")) return;
+
+  btn.disabled = true;
+
+  try {
+    await deleteQuote(btn.dataset.id);
+    await refresh();
+    say("Quote deleted.");
+  } catch (err) {
+    btn.disabled = false;
+    say("Could not delete: " + err.message, true);
   }
 });
 
-render();
+refresh();

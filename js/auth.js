@@ -1,14 +1,13 @@
 /* Access code — KA Event & Design
-   NOTE: this check runs in the browser. It keeps the page reserved, but it
-   is not real security (the code is visible in the source). A server would
-   be needed for that. */
 
-const CODE = "Kaguja7";
+   The code is checked on the server. It is not in this file, so it
+   cannot be read from the page source. */
 
 const modal = document.getElementById("modal");
 const input = document.getElementById("codeInput");
 const error = document.getElementById("codeError");
 const form  = document.getElementById("codeForm");
+const submit = form.querySelector("button[type=submit]");
 
 function openModal() {
   modal.classList.add("open");
@@ -36,23 +35,37 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
 });
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  error.textContent = "";
 
-  if (input.value.trim() === CODE) {
-    try {
-      sessionStorage.setItem("ka_access", "ok");
-    } catch (err) {
-      /* Some browsers block sessionStorage when the file is opened
-         directly (file://). The URL parameter is the fallback. */
+  const code = input.value.trim();
+  if (!code) return;
+
+  submit.disabled = true;
+  submit.textContent = "Checking…";
+
+  try {
+    const res  = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ code })
+    });
+    const body = await res.json().catch(() => ({}));
+
+    if (res.ok) {
+      window.location.href = "quotations.html";
+      return;
     }
-    // The URL fallback is only used when opening the files from disk
-    window.location.href = window.location.protocol === "file:"
-      ? "quotations.html?access=ok"
-      : "quotations.html";
-  } else {
-    error.textContent = "Incorrect code. Please try again.";
+
+    error.textContent = body.error || "Incorrect code. Please try again.";
     input.value = "";
     input.focus();
+  } catch (err) {
+    error.textContent = "Could not reach the server. Check your connection.";
+  } finally {
+    submit.disabled = false;
+    submit.textContent = "Continue";
   }
 });
