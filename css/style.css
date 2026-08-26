@@ -656,6 +656,62 @@ select.input option{
 }
 
 
+/* ===== OBSERVATIONS ===== */
+
+.terms{
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.terms-title{
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  font-weight: 400;
+  margin: 0 0 12px;
+}
+
+.terms-list{
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: 14.5px;
+}
+
+.terms-list li{
+  position: relative;
+  padding: 3px 0 3px 16px;
+}
+
+.terms-list li::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 6px;
+  height: 1px;
+  background: var(--cream-dim);
+}
+
+.terms-bank{ margin: 0; font-size: 14.5px; }
+
+.terms-label{
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  margin-bottom: 3px;
+}
+
+
+/* ===== REPEATED LOGO (print only) ===== */
+
+.print-logo{ display: none; }
+
+
 /* ===== INSPIRATION BLOCK ===== */
 
 .inspo{
@@ -715,6 +771,13 @@ select.input option{
   font-size: 11px;
   letter-spacing: .2em;
   text-transform: uppercase;
+  color: var(--cream-dim);
+}
+
+.quote-sign-ig{
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  letter-spacing: .06em;
   color: var(--cream-dim);
 }
 
@@ -784,7 +847,7 @@ select.input option{
   .quote{
     margin: 0;
     border: 0;
-    padding: 10mm 15mm 6mm;
+    padding: 10mm 15mm 5mm;
     animation: none;
   }
 
@@ -800,7 +863,7 @@ select.input option{
   /* Tighter spacing so a quotation with several decoration items
      still fits on one sheet */
   .quote-list{ margin-bottom: 18px; }
-  .quote-list > div{ padding: 4px 0; }
+  .quote-list > div{ padding: 3px 0; }
   .quote-list dd{ font-size: 14px; }
   .quote-list dt{ font-size: 10.5px; }
   .quote-table{ margin-bottom: 0; font-size: 13.5px; }
@@ -818,17 +881,27 @@ select.input option{
   .quote-table .total th,
   .quote-table .total td{ font-size: 20px; padding-top: 10px; }
 
-  /* Logo centered so it reads clearly in the PDF */
-  .quote-head{
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
-    padding-bottom: 16px;
-    margin-bottom: 16px;
+  /* A fixed box is painted onto every printed sheet, so this is what
+     puts the logo on page two and beyond. It sits in the top-right
+     corner, clear of the title on the left. */
+  .print-logo{
+    display: block;
+    position: fixed;
+    top: 9mm;
+    right: 15mm;
+    width: 15mm;
   }
 
-  .quote-logo{ width: 120px; }
+  /* The in-flow logo would collide with the fixed one on page one */
+  .quote-logo{ display: none; }
+
+  /* Title and date on the left, not centred */
+  .quote-head{
+    display: block;
+    text-align: left;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
 
   .quote-title{ font-size: 27px; }
   .quote-issued{ font-size: 10.5px; }
@@ -844,6 +917,20 @@ select.input option{
      page while the rows after it stay behind. */
   .quote-list > div{ break-inside: avoid; }
 
+  /* Observations stay together and compact */
+  .terms{
+    margin-top: 12px;
+    padding-top: 10px;
+    break-inside: avoid;
+  }
+
+  .terms-title{ font-size: 10px; margin-bottom: 8px; }
+  .terms-list{ font-size: 12.5px; margin-bottom: 10px; }
+  .terms-list li{ padding: 1px 0 1px 14px; }
+  .terms-list li::before{ top: 9px; }
+  .terms-bank{ font-size: 12.5px; }
+  .terms-label{ font-size: 9.5px; }
+
   /* Subtotal, discount and total always travel together */
   #qTotals{ break-inside: avoid; }
 
@@ -856,7 +943,8 @@ select.input option{
   .inspo{
     break-before: page;
     margin-top: 0;
-    padding-top: 0;
+    /* Starts below the repeated logo at the top of the sheet */
+    padding-top: 26mm;
     border-top: 0;
     break-inside: avoid;
   }
@@ -880,5 +968,6 @@ select.input option{
   }
 
   .quote-sign-name{ font-size: 20px; }
-  .quote-sign-role{ font-size: 6.5px; }
+  .quote-sign-role{ font-size: 7.5px; }
+  .quote-sign-ig{ font-size: 10px; margin-top: 4px; }
 }

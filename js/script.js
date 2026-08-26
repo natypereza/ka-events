@@ -378,17 +378,23 @@ form.addEventListener("submit", (e) => {
     }
   });
 
-  /* ---- Totals ---- */
+  /* ---- Totals ----
+     The discount comes off the extra hours only, never off the whole
+     subtotal. With no extra hours there is nothing to discount. */
   const subtotal       = items.reduce((sum, item) => sum + (item.amount || 0), 0);
-  const discountAmount = subtotal * (discount / 100);
+  const extraHoursCost = extraHours * hourRate;
+  const discountAmount = extraHoursCost * (discount / 100);
   const total          = subtotal - discountAmount;
 
   const totals = document.getElementById("qTotals");
   totals.textContent = "";
 
-  if (discount > 0) {
+  if (discountAmount > 0) {
     totals.appendChild(row("Subtotal", money(subtotal), "sub"));
-    totals.appendChild(row("Discount (" + discount + "%)", "− " + money(discountAmount), "sub"));
+    totals.appendChild(row(
+      "Discount (" + discount + "% on extra hours)",
+      "− " + money(discountAmount), "sub"
+    ));
   }
   totals.appendChild(row("Total", money(total), "total"));
 
