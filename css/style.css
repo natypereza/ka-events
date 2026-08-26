@@ -721,11 +721,11 @@ select.input option{
 
 /* ===== RESPONSIVE ===== */
 
-@media (max-width: 700px){
+@media screen and (max-width: 700px){
   .row-3{ grid-template-columns: 1fr 1fr; }
 }
 
-@media (max-width: 560px){
+@media screen and (max-width: 560px){
   .row,
   .row-3{ grid-template-columns: 1fr; }
   .page{ padding: 40px 20px 70px; }
@@ -784,14 +784,23 @@ select.input option{
   .quote{
     margin: 0;
     border: 0;
-    padding: 10mm 15mm 8mm;
+    padding: 10mm 15mm 6mm;
     animation: none;
+  }
+
+  /* The printed sheet must not depend on the width of the screen it
+     was sent from: a phone lays the page out at its own narrow width,
+     which used to stack every label above its value and push the
+     total off the first sheet. */
+  .quote-list > div{
+    grid-template-columns: 180px 1fr !important;
+    gap: 16px !important;
   }
 
   /* Tighter spacing so a quotation with several decoration items
      still fits on one sheet */
   .quote-list{ margin-bottom: 18px; }
-  .quote-list > div{ padding: 5px 0; }
+  .quote-list > div{ padding: 4px 0; }
   .quote-list dd{ font-size: 14px; }
   .quote-list dt{ font-size: 10.5px; }
   .quote-table{ margin-bottom: 0; font-size: 13.5px; }
@@ -862,11 +871,14 @@ select.input option{
   .inspo-title{ font-size: 21px; }
   .inspo-note{ font-size: 11.5px; margin-bottom: 14px; }
 
+  /* Kept tight so the signature closes the first sheet instead of
+     being pushed onto one of its own */
   .quote-sign{
-    margin-top: 28px;
-    padding-top: 18px;
+    margin-top: 12px;
+    padding-top: 12px;
     break-inside: avoid;
   }
 
-  .quote-sign-name{ font-size: 22px; }
+  .quote-sign-name{ font-size: 20px; }
+  .quote-sign-role{ font-size: 6.5px; }
 }
