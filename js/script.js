@@ -450,20 +450,29 @@ function safeName(text) {
   return text.replace(/[\\/:*?"<>|]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-/* ---- One continuous sheet ----
+/* ---- Downloading the quote ----
 
-   The quote prints as a single page as tall as it needs to be, so it
-   is never cut across two sheets. The browser needs that height up
-   front, and only the quote itself knows it, so the .pdf layout is
-   switched on, the height read back, and a matching @page written.
+   The quote is drawn to a canvas and wrapped in a PDF the browser
+   downloads directly, instead of being sent through the print dialog.
+   Printing could not be relied on: the dialog carries a paper size of
+   its own, and when it is set to Letter the browser shrinks the sheet
+   to fit and frames it in white. Drawing it ourselves fixes the size,
+   the colour and the file name on every machine.
 
-   The measuring happens inside the same turn as the print call, so the
-   half-finished state is never painted. */
+   The sheet layout is the preview itself, switched on by the .pdf
+   class for as long as it takes to draw. */
 
-const PDF_WIDTH = 605;
+const PDF_WIDTH = 605;   // the sheet is this wide; its height is the quote's
+const PDF_SCALE = 2;     // drawn at twice the size so the text stays sharp
 
 const pageRule = document.createElement("style");
 document.head.appendChild(pageRule);
+
+// Read from the stylesheet so the drawing can never drift from the design
+function sheetColor() {
+  return getComputedStyle(document.documentElement)
+           .getPropertyValue("--wine").trim() || "#26020a";
+}
 
 function sizeSheet() {
   document.documentElement.classList.add("pdf");
@@ -471,37 +480,77 @@ function sizeSheet() {
   /* Reading a layout property here forces the switch to take effect
      before the height is taken. It has to be the sub-pixel height and
      rounded up: offsetHeight rounds down, and a third of a pixel left
-     over is enough to start a second sheet. The spare pixel is just
-     more background. */
+     over is enough to start a second sheet. */
   const exact  = document.getElementById("quote").getBoundingClientRect().height;
   const height = Math.ceil(exact) + 1;
 
   pageRule.textContent =
     "@page { size: " + PDF_WIDTH + "px " + height + "px; margin: 0 }";
+
+  return height;
 }
 
-document.getElementById("btnPrint").addEventListener("click", () => {
-  sizeSheet();
-  window.print();
+const btnPrint = document.getElementById("btnPrint");
+
+btnPrint.addEventListener("click", async () => {
+  const label = btnPrint.textContent;
+  btnPrint.disabled = true;
+  btnPrint.textContent = "Preparing…";
+
+  try {
+    const height = sizeSheet();
+
+    // The headings are a web font; drawing before it arrives would
+    // bake the fallback face into the picture.
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+    const canvas = await html2canvas(document.getElementById("quote"), {
+      backgroundColor: sheetColor(),
+      scale: PDF_SCALE,
+      width: PDF_WIDTH,
+      height: height,
+      windowWidth: PDF_WIDTH,
+      useCORS: true,
+      logging: false
+    });
+
+    const doc = new jspdf.jsPDF({
+      orientation: height >= PDF_WIDTH ? "portrait" : "landscape",
+      unit: "px",
+      format: [PDF_WIDTH, height],
+      compress: true
+    });
+
+    doc.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG",
+                 0, 0, PDF_WIDTH, height);
+    doc.save((pdfName || "Quote") + ".pdf");
+  } catch (err) {
+    errorEl.textContent =
+      "The quote could not be prepared. Please try again.";
+    console.error(err);
+  } finally {
+    restorePreview();
+    btnPrint.disabled = false;
+    btnPrint.textContent = label;
+  }
 });
 
 const pageTitle = document.title;
-
-window.addEventListener("beforeprint", () => {
-  // Covers the browser's own print command, which never reaches the button
-  sizeSheet();
-  if (pdfName) document.title = pdfName;
-});
 
 function restorePreview() {
   document.documentElement.classList.remove("pdf");
   document.title = pageTitle;
 }
 
+/* The browser's own print command still has to produce something
+   sensible, so it gets the same sheet. */
+window.addEventListener("beforeprint", () => {
+  sizeSheet();
+  if (pdfName) document.title = pdfName;
+});
+
 window.addEventListener("afterprint", restorePreview);
 
-/* Safari on the phone does not always fire afterprint, and the preview
-   would be left in its sheet layout until the page was reloaded. */
 const printMedia = window.matchMedia("print");
 if (printMedia.addEventListener) {
   printMedia.addEventListener("change", (e) => { if (!e.matches) restorePreview(); });

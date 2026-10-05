@@ -747,14 +747,19 @@ select.input option{
   padding: 3px 0 3px 16px;
 }
 
+/* The rule flows inline rather than being pinned with position:
+   absolute. The drawing step that builds the PDF places an absolute
+   one-pixel box a little above where the browser puts it, and the
+   dash ended up floating over its line. */
+/* A real dash, not a drawn box. The step that paints the PDF ignores
+   vertical-align on a one-pixel-tall box and left the rule floating
+   above its line; a character sits on the baseline either way. */
 .terms-list li::before{
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 12px;
-  width: 6px;
-  height: 1px;
-  background: var(--cream-dim);
+  content: "\2013";
+  display: inline-block;
+  width: 16px;
+  margin-left: -16px;
+  color: var(--cream-dim);
 }
 
 .terms-bank{ margin: 0; font-size: 14.5px; }

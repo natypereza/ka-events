@@ -264,11 +264,15 @@
       </div>
 
       <div class="actions no-print">
-        <button type="button" class="btn" id="btnPrint">Print / Save PDF</button>
+        <button type="button" class="btn" id="btnPrint">Download PDF</button>
       </div>
     </section>
   </main>
 
+  <!-- Kept in the repo rather than loaded from a CDN: the quote has to
+       download even when the network is poor at a venue. -->
+  <script src="js/vendor/html2canvas.min.js"></script>
+  <script src="js/vendor/jspdf.umd.min.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>
