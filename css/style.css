@@ -3,7 +3,7 @@
 :root{
   --wine:      #26020a;
   --cream:     #F1EFE7;
-  --cream-dim: #8f8d86;
+  --cream-dim: #b3b0a8;
   --line:      #452830;
   --error:     #d98b7a;
 
@@ -268,7 +268,7 @@ select.input option{
 /* Date picker icon visible on the dark background */
 .input[type="date"]::-webkit-calendar-picker-indicator{
   filter: invert(1);
-  opacity: .6;
+  opacity: .75;
   cursor: pointer;
 }
 
