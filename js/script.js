@@ -490,6 +490,27 @@ function sizeSheet() {
   return height;
 }
 
+/* The two libraries are loaded by the page itself, but a browser can
+   easily end up holding a fresh script.js next to a cached copy of the
+   page that predates those tags. Rather than fail in that state, fetch
+   whatever is missing. */
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const tag = document.createElement("script");
+    tag.src = src;
+    tag.onload = resolve;
+    tag.onerror = () => reject(new Error("could not load " + src));
+    document.head.appendChild(tag);
+  });
+}
+
+async function ensureLibraries() {
+  if (typeof html2canvas === "undefined")
+    await loadScript("js/vendor/html2canvas.min.js");
+  if (typeof jspdf === "undefined")
+    await loadScript("js/vendor/jspdf.umd.min.js");
+}
+
 const btnPrint = document.getElementById("btnPrint");
 
 btnPrint.addEventListener("click", async () => {
@@ -498,6 +519,8 @@ btnPrint.addEventListener("click", async () => {
   btnPrint.textContent = "Preparing…";
 
   try {
+    await ensureLibraries();
+
     const height = sizeSheet();
 
     // The headings are a web font; drawing before it arrives would
@@ -526,7 +549,8 @@ btnPrint.addEventListener("click", async () => {
     doc.save((pdfName || "Quote") + ".pdf");
   } catch (err) {
     errorEl.textContent =
-      "The quote could not be prepared. Please try again.";
+      "The quote could not be prepared — " +
+      ((err && err.message) || err) + ". Please try again.";
     console.error(err);
   } finally {
     restorePreview();
