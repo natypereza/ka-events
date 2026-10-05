@@ -1,10 +1,10 @@
 /* ===== KA Event & Design ===== */
 
 :root{
-  --black:     #000000;
+  --wine:      #26020a;
   --cream:     #F1EFE7;
   --cream-dim: #8f8d86;
-  --line:      #2a2a28;
+  --line:      #452830;
   --error:     #d98b7a;
 
   --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
@@ -19,7 +19,7 @@
 html, body{
   margin: 0;
   padding: 0;
-  background: var(--black);
+  background: var(--wine);
   color: var(--cream);
   font-family: var(--sans);
   font-weight: 300;
@@ -136,7 +136,7 @@ img { max-width: 100%; display: block; }
 .btn:hover,
 .btn:focus-visible{
   background: var(--cream);
-  color: var(--black);
+  color: var(--wine);
 }
 
 .btn-block{ width: 100%; }
@@ -165,7 +165,7 @@ img { max-width: 100%; display: block; }
 .modal{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.88);
+  background: rgba(38,2,10,.9);
   backdrop-filter: blur(4px);
   display: none;
   align-items: center;
@@ -180,7 +180,7 @@ img { max-width: 100%; display: block; }
   width: 100%;
   max-width: 380px;
   border: 1px solid var(--line);
-  background: var(--black);
+  background: var(--wine);
   padding: 44px 34px 34px;
   text-align: center;
 }
@@ -261,11 +261,11 @@ select.input{
 }
 
 select.input option{
-  background: var(--black);
+  background: var(--wine);
   color: var(--cream);
 }
 
-/* Date picker icon visible on a black background */
+/* Date picker icon visible on the dark background */
 .input[type="date"]::-webkit-calendar-picker-indicator{
   filter: invert(1);
   opacity: .6;
@@ -878,8 +878,8 @@ select.input option{
 
 
 /* ===== PRINT / PDF =====
-   The downloaded quotation keeps the black background of the site.
-   No page margin so the black reaches the edge of the sheet; the padding
+   The downloaded quotation keeps the dark background of the site.
+   No page margin so the color reaches the edge of the sheet; the padding
    lives on .quote instead. */
 
 @page{ margin: 0; }
@@ -894,7 +894,7 @@ select.input option{
   }
 
   html, body{
-    background: var(--black) !important;
+    background: var(--wine) !important;
     color: var(--cream) !important;
   }
 
@@ -960,7 +960,7 @@ select.input option{
   .quote-head{
     position: relative;
     z-index: 1;
-    background: var(--black);
+    background: var(--wine);
     display: block;
     text-align: left;
     padding-bottom: 10px;
