@@ -909,7 +909,7 @@ select.input option{
   .quote{
     margin: 0;
     border: 0;
-    padding: 8mm 15mm 4mm;
+    padding: 10mm 17mm 6mm;
     animation: none;
   }
 
@@ -922,35 +922,42 @@ select.input option{
     gap: 16px !important;
   }
 
-  /* Tighter spacing so a quotation with several decoration items
-     still fits on one sheet */
-  .quote-list{ margin-bottom: 18px; }
-  .quote-list > div{ padding: 2px 0; }
-  .quote-list dd{ font-size: 13px; }
-  .quote-list dt{ font-size: 10px; }
-  .quote-table{ margin-bottom: 0; font-size: 13px; }
+  /* The sheet keeps the airy rhythm of the on-screen preview: every
+     detail on its own ruled line, with room to breathe. The sizes sit
+     just below the screen ones so a normal quote still closes on the
+     first sheet. */
+  .quote-list{ margin-bottom: 16px; }
+  .quote-list > div{ padding: 5px 0; }
+  .quote-list dd{ font-size: 14px; }
+  .quote-list dt{ font-size: 10.5px; padding-top: 2px; }
+  .quote-table{ margin-bottom: 0; font-size: 14px; }
   .quote-table th,
-  .quote-table td{ padding: 5px 0; }
+  .quote-table td{ padding: 6px 0; }
   .quote-table thead th{ font-size: 10.5px; }
-  .quote-table tbody .group th{ padding-top: 12px; font-size: 10.5px; }
-  .quote-table tbody .item td{ padding: 3px 0; }
-  .quote-table tbody .item th{ padding: 3px 0 3px 16px; }
-  .quote-table tbody .note th{ padding-top: 7px; font-size: 12px; }
+  .quote-table tbody .group th{ padding-top: 18px; font-size: 10.5px; }
+  .quote-table tbody .item td{ padding: 5px 0; }
+  .quote-table tbody .item th{ padding: 5px 0 5px 16px; }
+  .quote-table tbody .note th{ padding-top: 9px; font-size: 12.5px; }
   .quote-table tbody .group-total th,
-  .quote-table tbody .group-total td{ padding-top: 9px; }
+  .quote-table tbody .group-total td{ padding-top: 12px; }
   .quote-table .sub th,
-  .quote-table .sub td{ font-size: 13px; }
+  .quote-table .sub td{ font-size: 13.5px; }
   .quote-table .total th,
-  .quote-table .total td{ font-size: 20px; padding-top: 10px; }
+  .quote-table .total td{ font-size: 25px; padding-top: 12px; }
 
   /* A fixed box is painted onto every printed sheet, which is what
-     puts the logo in the corner of page two and beyond. */
+     puts the logo in the corner of page two and beyond.
+
+     It sits in the right-hand gutter, clear of the text column: a
+     fixed box reserves no space in the flow, so anything landing at
+     the top of a later sheet — the total of a long quote, a row of
+     photographs — would otherwise be printed straight through it. */
   .print-logo{
     display: block;
     position: fixed;
-    top: 12mm;
-    right: 15mm;
-    width: 15mm;
+    top: 10mm;
+    right: 3mm;
+    width: 12mm;
     z-index: 0;
   }
 
@@ -963,24 +970,33 @@ select.input option{
     background: var(--wine);
     display: block;
     text-align: left;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+    /* Pulled out to the paper edge: this opaque band is what hides the
+       repeated corner logo on the first sheet, and the logo now sits
+       in the gutter, outside the text column. */
+    margin: 0 -17mm 18px;
+    padding: 0 17mm;
+    /* The rule moves to the list below: on a band pulled out to the
+       paper edge it would run wider than every other rule. */
+    border-bottom: 0;
   }
+
+  .quote-list{ border-top: 1px solid #5c3842; }
 
   .quote-logo{
     display: block;
-    width: 21mm;
-    margin: 0 auto 6px;
+    width: 22mm;
+    margin: 0 auto 8px;
   }
 
-  .quote-title{ font-size: 24px; }
-  .quote-issued{ font-size: 10.5px; }
+  .quote-title{ font-size: 29px; }
+  .quote-issued{ font-size: 11px; }
 
-  /* Slightly lighter rules so they stay visible on paper */
+  /* A touch lighter than the screen rule so the hairlines survive
+     being printed, but still in the wine family */
   .quote-head,
   .quote-list > div,
   .quote-table th,
-  .quote-table td{ border-color: #3c3c39 !important; }
+  .quote-table td{ border-color: #5c3842 !important; }
 
   /* Keep the detail blocks whole. Table rows are deliberately left to
      flow: break-inside on <tr> makes Chrome drop a row onto the next
@@ -989,17 +1005,17 @@ select.input option{
 
   /* Observations stay together and compact */
   .terms{
-    margin-top: 10px;
-    padding-top: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
     break-inside: avoid;
   }
 
-  .terms-title{ font-size: 10px; margin-bottom: 8px; }
-  .terms-list{ font-size: 12.5px; margin-bottom: 10px; }
-  .terms-list li{ padding: 1px 0 1px 14px; }
-  .terms-list li::before{ top: 9px; }
-  .terms-bank{ font-size: 12.5px; }
-  .terms-label{ font-size: 9.5px; }
+  .terms-title{ font-size: 10.5px; margin-bottom: 12px; }
+  .terms-list{ font-size: 13.5px; margin-bottom: 12px; }
+  .terms-list li{ padding: 3px 0 3px 15px; }
+  .terms-list li::before{ top: 11px; }
+  .terms-bank{ font-size: 13.5px; }
+  .terms-label{ font-size: 10px; }
 
   /* Subtotal, discount and total always travel together */
   #qTotals{ break-inside: avoid; }
@@ -1007,37 +1023,35 @@ select.input option{
   /* Without this the browser reprints the column headers on every page */
   .quote-table thead{ display: table-row-group; }
 
-  /* When there are images they get their own sheet, so the quotation
-     itself always stays whole on the first one. The section is hidden
-     when no images were added, and a hidden box forces no break. */
+  /* The images carry straight on from the prices instead of being
+     sent to a sheet of their own. They are free to run over onto the
+     next sheet: the logo is out of the column, so nothing collides. */
   .inspo{
-    break-before: page;
-    margin-top: 0;
-    /* Starts below the repeated logo at the top of the sheet */
-    padding-top: 26mm;
-    border-top: 0;
+    margin-top: 14px;
+    padding-top: 12px;
+    break-before: auto;
     break-inside: avoid;
   }
 
+  .inspo-title{ font-size: 23px; break-after: avoid; }
+  .inspo-note{ font-size: 12px; margin-bottom: 16px; break-after: avoid; }
+
   .inspo-grid{
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 10px;
   }
 
   .inspo-grid img{ break-inside: avoid; }
 
-  .inspo-title{ font-size: 21px; }
-  .inspo-note{ font-size: 11.5px; margin-bottom: 14px; }
-
   /* Kept tight so the signature closes the first sheet instead of
      being pushed onto one of its own */
   .quote-sign{
-    margin-top: 6px;
-    padding-top: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
     break-inside: avoid;
   }
 
-  .quote-sign-name{ font-size: 18px; }
-  .quote-sign-role{ font-size: 7.5px; }
-  .quote-sign-ig{ font-size: 10px; margin-top: 4px; }
+  .quote-sign-name{ font-size: 22px; }
+  .quote-sign-role{ font-size: 8.5px; }
+  .quote-sign-ig{ font-size: 11px; margin-top: 5px; }
 }
