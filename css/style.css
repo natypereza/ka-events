@@ -596,7 +596,7 @@ select.input option{
   margin-bottom: 22px;
 }
 
-.quote-logo{ width: 68px; flex: none; }
+.quote-logo{ width: 104px; flex: none; }
 
 .quote-title{
   font-family: var(--serif);
@@ -894,6 +894,19 @@ html.pdf .page{
   max-width: none;
   margin: 0;
   padding: 0;
+}
+
+/* The colour is painted onto real elements, not left to the page
+   canvas. A browser asked to print without background graphics throws
+   the canvas away and the sheet comes out white, and print-color-adjust
+   only protects what an element actually paints. */
+html.pdf,
+html.pdf body,
+html.pdf .page,
+html.pdf .quote{
+  background: var(--wine) !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
 }
 
 html.pdf .quote{
