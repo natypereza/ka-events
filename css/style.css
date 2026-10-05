@@ -769,11 +769,6 @@ select.input option{
 }
 
 
-/* ===== REPEATED LOGO (print only) ===== */
-
-.print-logo{ display: none; }
-
-
 /* ===== INSPIRATION BLOCK ===== */
 
 .inspo{
@@ -877,16 +872,61 @@ select.input option{
 }
 
 
-/* ===== PRINT / PDF =====
-   The downloaded quotation keeps the dark background of the site.
-   No page margin so the color reaches the edge of the sheet; the padding
-   lives on .quote instead. */
+/* ===== PDF SHEET =====
+   The downloaded quote is one continuous sheet the shape of the preview
+   on screen, not a stack of letter pages. Its height is whatever the
+   quote needs, so nothing is ever cut in half and no page two exists.
+
+   The layout hangs off a class rather than living inside @media print,
+   because the page has to measure its own height before it can name a
+   paper size, and a print media query cannot be measured. Printing adds
+   .pdf to <html>, measures, writes the matching @page, and takes the
+   class off again afterwards. Everything the preview already does is
+   left alone: that is the point, the sheet IS the preview. */
+
+html.pdf .topbar,
+html.pdf .form,
+html.pdf .page-title,
+html.pdf .page-sub,
+html.pdf .no-print{ display: none !important; }
+
+html.pdf .page{
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+html.pdf .quote{
+  width: 605px;
+  margin: 0;
+  border: 0;
+  padding: 34px 45px 38px;
+  animation: none;
+}
+
+/* The two columns are held open explicitly. The preview collapses them
+   on a narrow phone, and that screen rule must not follow the quote
+   into the PDF, or every label would sit above its value. */
+html.pdf .quote-list > div{
+  grid-template-columns: 150px 1fr;
+  gap: 14px;
+}
+
+html.pdf .quote-sign{ margin-bottom: 0; }
+
+
+/* ===== PRINT =====
+   No page margin, so the colour reaches the edge of the sheet; the
+   padding lives on .quote instead. The size is written at print time.
+   Hiding the page furniture is repeated here so that a quote printed
+   with the browser's own command can never come out with the form in
+   it, even if the class was not applied. */
 
 @page{ margin: 0; }
 
 @media print{
 
-  /* Force the browser to actually print the colors instead of
+  /* Force the browser to actually print the colours instead of
      dropping backgrounds to save ink */
   *{
     -webkit-print-color-adjust: exact !important;
@@ -899,159 +939,4 @@ select.input option{
   }
 
   .topbar, .form, .page-title, .page-sub, .no-print{ display: none !important; }
-
-  .page{
-    max-width: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .quote{
-    margin: 0;
-    border: 0;
-    padding: 10mm 17mm 6mm;
-    animation: none;
-  }
-
-  /* The printed sheet must not depend on the width of the screen it
-     was sent from: a phone lays the page out at its own narrow width,
-     which used to stack every label above its value and push the
-     total off the first sheet. */
-  .quote-list > div{
-    grid-template-columns: 180px 1fr !important;
-    gap: 16px !important;
-  }
-
-  /* The sheet keeps the airy rhythm of the on-screen preview: every
-     detail on its own ruled line, with room to breathe. The sizes sit
-     just below the screen ones so a normal quote still closes on the
-     first sheet. */
-  .quote-list{ margin-bottom: 16px; }
-  .quote-list > div{ padding: 5px 0; }
-  .quote-list dd{ font-size: 14px; }
-  .quote-list dt{ font-size: 10.5px; padding-top: 2px; }
-  .quote-table{ margin-bottom: 0; font-size: 14px; }
-  .quote-table th,
-  .quote-table td{ padding: 6px 0; }
-  .quote-table thead th{ font-size: 10.5px; }
-  .quote-table tbody .group th{ padding-top: 18px; font-size: 10.5px; }
-  .quote-table tbody .item td{ padding: 5px 0; }
-  .quote-table tbody .item th{ padding: 5px 0 5px 16px; }
-  .quote-table tbody .note th{ padding-top: 9px; font-size: 12.5px; }
-  .quote-table tbody .group-total th,
-  .quote-table tbody .group-total td{ padding-top: 12px; }
-  .quote-table .sub th,
-  .quote-table .sub td{ font-size: 13.5px; }
-  .quote-table .total th,
-  .quote-table .total td{ font-size: 25px; padding-top: 12px; }
-
-  /* A fixed box is painted onto every printed sheet, which is what
-     puts the logo in the corner of page two and beyond.
-
-     It sits in the right-hand gutter, clear of the text column: a
-     fixed box reserves no space in the flow, so anything landing at
-     the top of a later sheet — the total of a long quote, a row of
-     photographs — would otherwise be printed straight through it. */
-  .print-logo{
-    display: block;
-    position: fixed;
-    top: 10mm;
-    right: 3mm;
-    width: 12mm;
-    z-index: 0;
-  }
-
-  /* Page one carries the full logo centred instead. This header is
-     opaque and sits above the fixed one, hiding the corner mark on
-     the first sheet only. */
-  .quote-head{
-    position: relative;
-    z-index: 1;
-    background: var(--wine);
-    display: block;
-    text-align: left;
-    /* Pulled out to the paper edge: this opaque band is what hides the
-       repeated corner logo on the first sheet, and the logo now sits
-       in the gutter, outside the text column. */
-    margin: 0 -17mm 18px;
-    padding: 0 17mm;
-    /* The rule moves to the list below: on a band pulled out to the
-       paper edge it would run wider than every other rule. */
-    border-bottom: 0;
-  }
-
-  .quote-list{ border-top: 1px solid #5c3842; }
-
-  .quote-logo{
-    display: block;
-    width: 22mm;
-    margin: 0 auto 8px;
-  }
-
-  .quote-title{ font-size: 29px; }
-  .quote-issued{ font-size: 11px; }
-
-  /* A touch lighter than the screen rule so the hairlines survive
-     being printed, but still in the wine family */
-  .quote-head,
-  .quote-list > div,
-  .quote-table th,
-  .quote-table td{ border-color: #5c3842 !important; }
-
-  /* Keep the detail blocks whole. Table rows are deliberately left to
-     flow: break-inside on <tr> makes Chrome drop a row onto the next
-     page while the rows after it stay behind. */
-  .quote-list > div{ break-inside: avoid; }
-
-  /* Observations stay together and compact */
-  .terms{
-    margin-top: 14px;
-    padding-top: 12px;
-    break-inside: avoid;
-  }
-
-  .terms-title{ font-size: 10.5px; margin-bottom: 12px; }
-  .terms-list{ font-size: 13.5px; margin-bottom: 12px; }
-  .terms-list li{ padding: 3px 0 3px 15px; }
-  .terms-list li::before{ top: 11px; }
-  .terms-bank{ font-size: 13.5px; }
-  .terms-label{ font-size: 10px; }
-
-  /* Subtotal, discount and total always travel together */
-  #qTotals{ break-inside: avoid; }
-
-  /* Without this the browser reprints the column headers on every page */
-  .quote-table thead{ display: table-row-group; }
-
-  /* The images carry straight on from the prices instead of being
-     sent to a sheet of their own. They are free to run over onto the
-     next sheet: the logo is out of the column, so nothing collides. */
-  .inspo{
-    margin-top: 14px;
-    padding-top: 12px;
-    break-before: auto;
-    break-inside: avoid;
-  }
-
-  .inspo-title{ font-size: 23px; break-after: avoid; }
-  .inspo-note{ font-size: 12px; margin-bottom: 16px; break-after: avoid; }
-
-  .inspo-grid{
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-
-  .inspo-grid img{ break-inside: avoid; }
-
-  /* Kept tight so the signature closes the first sheet instead of
-     being pushed onto one of its own */
-  .quote-sign{
-    margin-top: 12px;
-    padding-top: 10px;
-    break-inside: avoid;
-  }
-
-  .quote-sign-name{ font-size: 22px; }
-  .quote-sign-role{ font-size: 8.5px; }
-  .quote-sign-ig{ font-size: 11px; margin-top: 5px; }
 }
